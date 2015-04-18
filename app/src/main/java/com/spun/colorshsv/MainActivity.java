@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,11 +42,11 @@ public class MainActivity extends Activity {
             float[] temp = new float[] {360-(i*30), MAX_SATURATION, MAX_VALUE};
             hsv[i]  = temp;
         }
-        rainbowList = new ArrayList<Integer>();
-        ArrayList<float[]> hsvList = new ArrayList<float[]>();
-        //ArrayList<HSV> hsvList = new ArrayList<HSV>();
+        rainbowList = new ArrayList<>();
+        ArrayList<float[]> hsvList = new ArrayList<>();
+
         for (int i = 0; i < hsv.length; i++) {
-            //HSV color = new HSV(hsv[i]);
+
             hsvList.add(hsv[i]);
         }
 
@@ -53,24 +54,10 @@ public class MainActivity extends Activity {
             rainbowList.add(rainbow[i]);
         }
 
-//        LevelOneAdapter adapter = new LevelOneAdapter(this, hsvList);
-//        listView.setAdapter(adapter);
-//
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View view,
-//                                    int position, long id) {
-//                // When clicked, show a toast with the TextView text
-//                Toast.makeText(getApplicationContext(),
-//                        "Item has been clicked.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
         CustomFragment huesFragment = new CustomFragment();
-        Bundle bundle = new Bundle();
-        ///bundle.putFloatArray("Colors", hsv);
-
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(android.R.id.content, huesFragment);
+        ft.add(android.R.id.content, huesFragment, "First");
         ft.commit();
         /*The first fragment contains gradients of pure spectral hues with 100% saturation
         /*100% value.
@@ -82,6 +69,15 @@ public class MainActivity extends Activity {
         /*The second fragment displays the same hues at varying saturation levels (100% to 0%)
         /*at a constant 100% value.
          */
+    }
+    public void replaceFragment() {
+        CustomFragment huesFragment = new CustomFragment();
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(android.R.id.content, huesFragment, "Second");
+        ft.commit();
+
+        Toast.makeText(this, "Second fragment replaced the first.", Toast.LENGTH_SHORT).show();
     }
     public class LevelOneAdapter extends ArrayAdapter<float[]> {
         private int size;
@@ -118,4 +114,15 @@ public class MainActivity extends Activity {
     }
 }
 
-
+//LevelOneAdapter adapter = new LevelOneAdapter(this, hsvList);
+//        listView.setAdapter(adapter);
+//
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            public void onItemClick(AdapterView<?> parent, View view,
+//                                    int position, long id) {
+//                // When clicked, show a toast with the TextView text
+//                Toast.makeText(getApplicationContext(),
+//                        "Item has been clicked.", Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });

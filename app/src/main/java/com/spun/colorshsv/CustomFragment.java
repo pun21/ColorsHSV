@@ -57,7 +57,7 @@ public class CustomFragment extends ListFragment {
 
         Toast.makeText(getActivity(), "Item has been clicked, -->Lv.2", Toast.LENGTH_SHORT).show();
         //replace with another fragment
-        //((MainActivity)getActivity()).replaceFragment();
+        ((MainActivity)getActivity()).replaceFragment();
     }
 
     public class LevelTwoAdapter extends ArrayAdapter<float[]> {
