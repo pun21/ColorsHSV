@@ -2,17 +2,22 @@ package com.spun.colorshsv;
 
 
 public class HSV {
-    private int h;
-    private int s;
-    private int v;
+    private float h;
+    private float s;
+    private float v;
 
     public HSV() {};
+    public HSV(float[] hsv) {
+        this.h = hsv[0];
+        this.s = hsv[1];
+        this.v = hsv[2];
+    }
     public HSV(int h, int s, int v) {
         this.h = h;
         this.s = s;
         this.v = v;
     }
-    public int getH() {
+    public float getH() {
         return h;
     }
 
@@ -20,7 +25,7 @@ public class HSV {
         this.h = h;
     }
 
-    public int getS() {
+    public float getS() {
         return s;
     }
 
@@ -28,7 +33,7 @@ public class HSV {
         this.s = s;
     }
 
-    public int getV() {
+    public float getV() {
         return v;
     }
 
