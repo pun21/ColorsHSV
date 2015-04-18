@@ -27,11 +27,10 @@ public class CustomFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        hues = new ArrayList<float[]>();
+        Bundle bundle = this.getArguments();
         float hsv[][] = new float[13][];
         for (int i = 0; i < hsv.length; i++) {
-            float[] temp = new float[] {360-(i*30), MAX_SATURATION, MAX_VALUE};
-            hsv[i]  = temp;
+            hsv[i] = bundle.getFloatArray("color "+i);
         }
 
         ArrayList<float[]> hsvList = new ArrayList<float[]>();
@@ -41,7 +40,6 @@ public class CustomFragment extends ListFragment {
             hsvList.add(hsv[i]);
         }
 
-        //LevelTwoAdapter adapter = new LevelTwoAdapter(getActivity(), hsvList);
         setListAdapter(new LevelTwoAdapter(getActivity(), hsvList));
     }
     public CustomFragment() {}
