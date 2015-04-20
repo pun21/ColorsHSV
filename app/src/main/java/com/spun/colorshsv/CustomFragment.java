@@ -22,22 +22,45 @@ public class CustomFragment extends ListFragment {
     private static int MIN_SATURATION = 0;
     private static int MAX_VALUE = 1;
     private static int MIN_VALUE = 0;
-    private ArrayList<float[]> hues;
+    private static int HUE_RANGE;
+
+    private ArrayList<float[]> hsvList;
+    private boolean first_created = false;
     private String mTag;
     private float h, s, v;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        hsvList = new ArrayList<>();
         Bundle bundle = this.getArguments();
+        setVariables(bundle);
+
+        first_created = true;
+        setListAdapter(new LevelTwoAdapter(getActivity(), hsvList));
+    }
+    public CustomFragment() {}
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (!first_created) {
+            Bundle bundle = this.getArguments();
+            setVariables(bundle);
+        }
+        // remove the dividers from the ListView of the ListFragment
+        getListView().setDivider(null);
+    }
+    private void setVariables(Bundle bundle) {
         float hsv[][] = new float[10][];
         for (int i = 0; i < hsv.length; i++) {
             hsv[i] = bundle.getFloatArray("color "+i);
         }
 
         mTag = bundle.getString("tag");
+        HUE_RANGE = bundle.getInt("hRange");
 
-        ArrayList<float[]> hsvList = new ArrayList<>();
+        if (!hsvList.isEmpty())
+            hsvList.clear();
 
         for (int i = 0; i < hsv.length; i++) {
             hsvList.add(hsv[i]);
@@ -48,19 +71,12 @@ public class CustomFragment extends ListFragment {
             s = bundle.getFloat("s");
             v = bundle.getFloat("v");
         }
-        setListAdapter(new LevelTwoAdapter(getActivity(), hsvList));
-    }
-    public CustomFragment() {}
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // remove the dividers from the ListView of the ListFragment
-        getListView().setDivider(null);
     }
     @Override
     public void onListItemClick(ListView listView, View v, int position, long id) {
         super.onListItemClick(listView, v, position, id);
 
+        first_created = false;
         int level = 0;
         if (mTag == "First")
             level = 2;
@@ -68,16 +84,24 @@ public class CustomFragment extends ListFragment {
             level = 3;
         else
             level = 4;
-        if (mTag == "Third") {
-            //replace with another fragment
-            Toast.makeText(getActivity(), "Item has been clicked, -->Lv."+level, Toast.LENGTH_SHORT).show();
-            ((MainActivity)getActivity()).replaceFragment(position);
-        }
-        else if (mTag == "Fourth")
+
+        if (mTag == "Fourth")
             Toast.makeText(getActivity(), "Go back to select another color.", Toast.LENGTH_SHORT).show();
         else {
             Toast.makeText(getActivity(), "Item has been clicked, -->Lv."+level, Toast.LENGTH_SHORT).show();
             ((MainActivity)getActivity()).replaceFragment(position);
+        }
+    }
+
+    public void setTag(int tag) {
+        switch (tag) {
+            case 0: mTag = "First";
+                    break;
+            case 1: mTag = "Second";
+                    break;
+            case 2: mTag = "Third";
+                    break;
+            case 3: mTag = "Fourth";
         }
     }
 
@@ -106,7 +130,7 @@ public class CustomFragment extends ListFragment {
                     colorRight = Color.HSVToColor(getItem(position + 1));
                 else {
                     float[] color = getItem(position);
-                    color[0] = color[0] + 30;
+                    color[0] = color[0] + HUE_RANGE;
                     colorRight = Color.HSVToColor(color);
                 }
                 GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{colorLeft, colorRight});
@@ -144,7 +168,7 @@ public class CustomFragment extends ListFragment {
                 //todo try to use the empty in a listview
                 if (position == 0) {
                     textView.setText("HSV values selected:\n" +
-                                     "Hue Range: " + h + "-" + (h+30) + "\n" +
+                                     "Hue Range: " + h + "-" + (h+HUE_RANGE) + "\n" +
                                      "Saturation: " + s + "\n" +
                                      "Value: " + v);
                     textView.setTextSize(18);
