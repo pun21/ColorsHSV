@@ -39,7 +39,10 @@ public class CustomFragment extends ListFragment {
         first_created = true;
         setListAdapter(new LevelTwoAdapter(getActivity(), hsvList));
     }
+
+    //empty constructor
     public CustomFragment() {}
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -113,6 +116,7 @@ public class CustomFragment extends ListFragment {
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
             }

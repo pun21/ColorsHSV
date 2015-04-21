@@ -10,18 +10,21 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
-    private static int MAX_HUE = 360;
-    private static int MIN_HUE = 0;
     private static float MAX_SATURATION = 1;
-    private static float MIN_SATURATION = 0;
     private static float MAX_VALUE = 1;
-    private static float MIN_VALUE = 0;
-    private static int HUE_RANGE = 30;
+    private static float HUE_RANGE = 30;
+    private static float SATURATION_DIFF = .1f;
+    private static float VALUE_DIFF = .1f;
+    private static int NUM_HUE_ROWS = 360/(int)HUE_RANGE;
+    private static int NUM_SATURATION_ROWS = (int)(MAX_SATURATION/SATURATION_DIFF);
+    private static int NUM_VALUE_ROWS = (int)(MAX_VALUE/VALUE_DIFF);
 
-    private CustomFragment huesFragment, saturationFragment, valuesFragment, summaryFragment;
-    private float[][] hsv;
+
+    private ArrayList<float[]> hsvList;
+    private CustomFragment huesFragment, saturationFragment, valuesFragment;
+    private SummaryFragment summaryFragment;
     private String[] mFragmentTag = new String[]{"First", "Second", "Third", "Fourth"};
-    private int mTag = 0;
+    private int mFragmentIndex = 0;
     private float h;
     private float s;
 
@@ -29,25 +32,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        hsv = new float[10][];
-        for (int i = 0; i < hsv.length; i++) {
-            float[] temp = new float[]{0 + (i * HUE_RANGE), MAX_SATURATION, MAX_VALUE};
-            hsv[i] = temp;
-        }
-
-        ArrayList<float[]> hsvList = new ArrayList<>();
-
-        for (int i = 0; i < hsv.length; i++) {
-            hsvList.add(hsv[i]);
-        }
+        ArrayList<float[]> hsvList = setHSV(0, 0, 0);
 
         huesFragment = new CustomFragment();
         Bundle bundle = new Bundle();
-        for (int i = 0; i < hsv.length; i++) {
-            bundle.putFloatArray("color "+i, hsv[i]);
+        for (int i = 0; i < 12; i++) {
+            bundle.putFloatArray("color "+i, hsvList.get(i));
         }
         bundle.putString("tag", mFragmentTag[0]);
-        bundle.putInt("hRange", HUE_RANGE);
+        bundle.putFloat("hRange", HUE_RANGE);
         huesFragment.setArguments(bundle);
 
          /*The first fragment contains gradients of pure spectral hues with 100% saturation
@@ -55,10 +48,50 @@ public class MainActivity extends Activity {
         */
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(android.R.id.content, huesFragment, mFragmentTag[mTag]);
+        ft.add(android.R.id.content, huesFragment, mFragmentTag[mFragmentIndex]);
         ft.addToBackStack(null);
         ft.commit();
-        mTag++;
+        mFragmentIndex++;
+    }
+    private ArrayList<float[]> setHSV(float selectedHue, float selectedSaturation, float selectedValue) {
+        int i;
+        float hue = 0;
+        float saturation = MAX_SATURATION;
+        float value = MAX_VALUE;
+        ArrayList<float[]> hsvList = new ArrayList<>();
+        float[][] hsv;
+        switch (mFragmentIndex) {
+            case 0: hsv = new float[NUM_HUE_ROWS][];
+                    for (i = 0; i < hsv.length; i++) {
+                        float[] temp = new float[]{hue, saturation, value};
+                        hsv[i] = temp;
+                        hue+=HUE_RANGE;
+                    }
+                    break;
+            case 1: hsv = new float[NUM_SATURATION_ROWS][];
+                    hue = selectedHue;
+                    for (i = 0; i < hsv.length; i++) {
+                        float[] temp = new float[]{hue, saturation, value};
+                        hsv[i] = temp;
+                        saturation-=SATURATION_DIFF;
+                    }
+                    break;
+            case 2: hsv = new float[NUM_VALUE_ROWS][];
+                    hue = selectedHue;
+                    saturation = selectedSaturation;
+                    for (i = 0; i < hsv.length; i++) {
+                        float[] temp = new float[]{hue, saturation, value};
+                        hsv[i] = temp;
+                        value-=VALUE_DIFF;
+                    }
+                    break;
+            default: hsv = new float[][]{{0, 0, 0}};
+        }
+
+        for (i = 0; i < hsv.length; i++) {
+            hsvList.add(hsv[i]);
+        }
+        return hsvList;
     }
 
     public void replaceFragment(int position) {
@@ -68,90 +101,86 @@ public class MainActivity extends Activity {
         Bundle bundle = new Bundle();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        if (mFragmentTag[mTag] == "Second") {
+        if (mFragmentTag[mFragmentIndex] == "Second") {
             if (saturationFragment == null)
                 saturationFragment = new CustomFragment();
 
-            for (int i = 0; i < hsv.length; i++) {
-                float[] temp = new float[]{0 + (position * HUE_RANGE), MAX_SATURATION - i*(MAX_SATURATION/hsv.length), MAX_VALUE};
-                hsv[i] = temp;
-            }
+            ArrayList<float[]> hsvList = setHSV(position*HUE_RANGE, 0, 0);
+
             h = position;
-            for (int i = 0; i < hsv.length; i++) {
-                bundle.putFloatArray("color "+i, hsv[i]);
+            for (int i = 0; i < hsvList.size(); i++) {
+                bundle.putFloatArray("color "+i, hsvList.get(i));
             }
-            bundle.putString("tag", mFragmentTag[mTag]);
+            bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             if (saturationFragment.getArguments() != null)
                 saturationFragment.getArguments().putBundle("bundle", bundle);
             else
                 saturationFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, saturationFragment, mFragmentTag[mTag]);
+            ft.replace(android.R.id.content, saturationFragment, mFragmentTag[mFragmentIndex]);
         }
-        else if (mFragmentTag[mTag] == "Third") {
+        else if (mFragmentTag[mFragmentIndex] == "Third") {
             if (valuesFragment == null)
                 valuesFragment = new CustomFragment();
 
-            for (int i = 0; i < hsv.length; i++) {
-                float[] temp = new float[]{0 + (h * HUE_RANGE), MAX_SATURATION - position*(MAX_SATURATION/hsv.length), MAX_VALUE-i*(MAX_VALUE
-                /hsv.length)};
-                hsv[i] = temp;
-            }
+            ArrayList<float[]> hsvList = setHSV(h*HUE_RANGE, MAX_SATURATION-position*SATURATION_DIFF, 0);
+
             s = position;
-            for (int i = 0; i < hsv.length; i++) {
-                bundle.putFloatArray("color "+i, hsv[i]);
+            for (int i = 0; i < hsvList.size(); i++) {
+                bundle.putFloatArray("color "+i, hsvList.get(i));
             }
-            bundle.putString("tag", mFragmentTag[mTag]);
+            bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             if (valuesFragment.getArguments() != null)
                 valuesFragment.getArguments().putBundle("bundle", bundle);
             else
                 valuesFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, valuesFragment, mFragmentTag[mTag]);
+            ft.replace(android.R.id.content, valuesFragment, mFragmentTag[mFragmentIndex]);
         }
         else {
             if (summaryFragment == null)
-                summaryFragment = new CustomFragment();
-            for (int i = 0; i < hsv.length; i++) {
-                float[] temp = new float[]{0, MAX_SATURATION, MAX_VALUE};
-                hsv[i] = temp;
-            }
-            bundle.putFloat("h", 0 + (h * HUE_RANGE));
-            bundle.putFloat("s", MAX_SATURATION - s*(MAX_SATURATION/hsv.length));
-            bundle.putFloat("v", MAX_VALUE-position*(MAX_VALUE
-                    /hsv.length));
-            for (int i = 0; i < hsv.length; i++) {
-                bundle.putFloatArray("color "+i, hsv[i]);
-            }
-            bundle.putString("tag", mFragmentTag[mTag]);
+                summaryFragment = new SummaryFragment();
+//            for (int i = 0; i < hsv.length; i++) {
+//                float[] temp = new float[]{0, MAX_SATURATION, MAX_VALUE};
+//                hsv[i] = temp;
+//            }
+//            bundle.putFloat("h", 0 + (h * HUE_RANGE));
+//            bundle.putFloat("s", MAX_SATURATION - s*(MAX_SATURATION/hsv.length));
+//            bundle.putFloat("v", MAX_VALUE-position*(MAX_VALUE
+//                    /hsv.length));
+//            for (int i = 0; i < hsv.length; i++) {
+//                bundle.putFloatArray("color "+i, hsv[i]);
+//            }
+            bundle.putString("summary", "woohoo! summary");
+            bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             if (summaryFragment.getArguments() != null)
                 summaryFragment.getArguments().putBundle("bundle", bundle);
             else
                 summaryFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, summaryFragment, mFragmentTag[mTag]);
+            ft.replace(android.R.id.content, summaryFragment, mFragmentTag[mFragmentIndex]);
         }
 
         ft.addToBackStack(null);
         ft.commit();
-        Toast.makeText(this, mFragmentTag[mTag++] + " fragment replaced the first.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mFragmentTag[mFragmentIndex++] + " fragment replaced the first.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 
-        if (mTag == 2) {
-            mTag = mTag-2;
-            huesFragment.setTag(mTag);
-            mTag++;
+        if (mFragmentIndex == 2) {
+            mFragmentIndex = mFragmentIndex -2;
+            huesFragment.setTag(mFragmentIndex);
+            mFragmentIndex++;
         }
-        else if (mTag == 3) {
-            mTag = mTag-2;
-            saturationFragment.setTag(mTag);
-            mTag++;
+        else if (mFragmentIndex == 3) {
+            mFragmentIndex = mFragmentIndex -2;
+            saturationFragment.setTag(mFragmentIndex);
+            mFragmentIndex++;
         }
-        else if (mTag == 4) {
-            mTag = mTag-2;
-            valuesFragment.setTag(mTag);
-            mTag++;
+        else if (mFragmentIndex == 4) {
+            mFragmentIndex = mFragmentIndex -2;
+            valuesFragment.setTag(mFragmentIndex);
+            mFragmentIndex++;
         }
     }
 }
