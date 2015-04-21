@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
+    //region variables
     private static float MAX_SATURATION = 1;
     private static float MAX_VALUE = 1;
     private static float HUE_RANGE = 30;
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
     private float h;
     private float s;
     private float v;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,10 +118,11 @@ public class MainActivity extends Activity {
             }
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             bundle.putInt("num_rows", NUM_SATURATION_ROWS);
-            if (saturationFragment.getArguments() != null)
-                saturationFragment.getArguments().putBundle("bundle", bundle);
-            else
-                saturationFragment.setArguments(bundle);
+            if (saturationFragment.getArguments() != null) {
+                saturationFragment.setArguments(null);
+            }
+
+            saturationFragment.setArguments(bundle);
             ft.replace(android.R.id.content, saturationFragment, mFragmentTag[mFragmentIndex]);
         }
         else if (mFragmentTag[mFragmentIndex] == "Third") {
@@ -135,9 +138,9 @@ public class MainActivity extends Activity {
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             bundle.putInt("num_rows", NUM_VALUE_ROWS);
             if (valuesFragment.getArguments() != null)
-                valuesFragment.getArguments().putBundle("bundle", bundle);
-            else
-                valuesFragment.setArguments(bundle);
+                valuesFragment.setArguments(null);
+
+            valuesFragment.setArguments(bundle);
             ft.replace(android.R.id.content, valuesFragment, mFragmentTag[mFragmentIndex]);
         }
         else {
@@ -152,9 +155,9 @@ public class MainActivity extends Activity {
             bundle.putString("summary", summaryText);
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             if (summaryFragment.getArguments() != null)
-                summaryFragment.getArguments().putBundle("bundle", bundle);
-            else
-                summaryFragment.setArguments(bundle);
+                summaryFragment.setArguments(null);
+
+            summaryFragment.setArguments(bundle);
             ft.replace(android.R.id.content, summaryFragment, mFragmentTag[mFragmentIndex]);
         }
 
