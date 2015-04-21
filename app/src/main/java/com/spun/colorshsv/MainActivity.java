@@ -35,28 +35,50 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ArrayList<float[]> hsvList = setHSV(0, 0, 0);
+        if (savedInstanceState == null) {
+            ArrayList<float[]> hsvList = setHSV(0, 0, 0);
 
-        huesFragment = new CustomFragment();
-        Bundle bundle = new Bundle();
-        for (int i = 0; i < NUM_HUE_ROWS; i++) {
-            bundle.putFloatArray("color "+i, hsvList.get(i));
-        }
-        bundle.putString("tag", mFragmentTag[0]);
-        bundle.putFloat("hRange", HUE_RANGE);
-        bundle.putInt("num_rows", NUM_HUE_ROWS);
-        huesFragment.setArguments(bundle);
+            huesFragment = new CustomFragment();
+            Bundle bundle = new Bundle();
+            for (int i = 0; i < NUM_HUE_ROWS; i++) {
+                bundle.putFloatArray("color "+i, hsvList.get(i));
+            }
+            bundle.putString("tag", mFragmentTag[0]);
+            bundle.putFloat("hRange", HUE_RANGE);
+            bundle.putInt("num_rows", NUM_HUE_ROWS);
+            huesFragment.setArguments(bundle);
 
          /*The first fragment contains gradients of pure spectral hues with 100% saturation
         /*100% value.
         */
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(android.R.id.content, huesFragment, mFragmentTag[mFragmentIndex]);
-        ft.addToBackStack(null);
-        ft.commit();
-        mFragmentIndex++;
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(android.R.id.content, huesFragment, mFragmentTag[mFragmentIndex]);
+            ft.addToBackStack(null);
+            ft.commit();
+            mFragmentIndex++;
+        }
+        else if (savedInstanceState != null) {
+            int count = getFragmentManager().getBackStackEntryCount();
+            mFragmentIndex = savedInstanceState.getInt("fragment_index");
+            mFragmentIndex++;
+            restoreFragments();
+            //restoreViewState();
+        }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("fragment_index",--mFragmentIndex);
+    }
+    private void restoreFragments() {
+        huesFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[0]);
+        saturationFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[1]);
+        valuesFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[2]);
+        summaryFragment = (SummaryFragment) getFragmentManager().findFragmentByTag(mFragmentTag[3]);
+    }
+   
     private ArrayList<float[]> setHSV(float selectedHue, float selectedSaturation, float selectedValue) {
         int i;
         float hue = 0;

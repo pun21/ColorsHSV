@@ -12,8 +12,7 @@ public class SummaryFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = new Bundle();
-        bundle = this.getArguments();
+        Bundle bundle = this.getArguments();
 
         setText(bundle);
 
