@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,8 +17,7 @@ public class MainActivity extends Activity {
     private static float VALUE_DIFF = .1f;
     private static int NUM_HUE_ROWS = 360/(int)HUE_RANGE;
     private static int NUM_SATURATION_ROWS = (int)(MAX_SATURATION/SATURATION_DIFF);
-    private static int NUM_VALUE_ROWS = (int)(MAX_VALUE/VALUE_DIFF);
-
+    private static int NUM_VALUE_ROWS = (int)(MAX_VALUE/VALUE_DIFF)+1;
 
     private Bundle savedBundle;
     private ArrayList<float[]> hsvList;
@@ -32,6 +30,7 @@ public class MainActivity extends Activity {
     private float v;
     //endregion
 
+    //region Lifecycle and related methods
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,20 +65,27 @@ public class MainActivity extends Activity {
         super.onResume();
         if (savedBundle != null) {
             mFragmentIndex = savedBundle.getInt("fragment_index");
+            h = savedBundle.getFloat("h");
+            s = savedBundle.getFloat("s");
+            v = savedBundle.getFloat("v");
             mFragmentIndex++;
             restoreFragments();
         }
     }
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("fragment_index",--mFragmentIndex);
-        savedBundle = outState;
-    }
-    @Override
     protected void onPause() {
         super.onPause();
     }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("fragment_index",--mFragmentIndex);
+        outState.putFloat("h", h);
+        outState.putFloat("s", s);
+        outState.putFloat("v", v);
+        savedBundle = outState;
+    }
+    //endregion
     private void restoreFragments() {
         huesFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[0]);
         saturationFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[1]);
@@ -153,7 +159,7 @@ public class MainActivity extends Activity {
             }
 
             saturationFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, saturationFragment, mFragmentTag[mFragmentIndex]);
+            ft.replace(android.R.id.content, saturationFragment, mFragmentTag[mFragmentIndex++]);
         }
         else if (mFragmentTag[mFragmentIndex] == "Third") {
             if (valuesFragment == null)
@@ -171,7 +177,7 @@ public class MainActivity extends Activity {
                 valuesFragment.setArguments(null);
 
             valuesFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, valuesFragment, mFragmentTag[mFragmentIndex]);
+            ft.replace(android.R.id.content, valuesFragment, mFragmentTag[mFragmentIndex++]);
         }
         else {
             if (summaryFragment == null)
@@ -188,12 +194,11 @@ public class MainActivity extends Activity {
                 summaryFragment.setArguments(null);
 
             summaryFragment.setArguments(bundle);
-            ft.replace(android.R.id.content, summaryFragment, mFragmentTag[mFragmentIndex]);
+            ft.replace(android.R.id.content, summaryFragment, mFragmentTag[mFragmentIndex++]);
         }
 
         ft.addToBackStack(null);
         ft.commit();
-        Toast.makeText(this, mFragmentTag[mFragmentIndex++] + " fragment replaced the first.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
