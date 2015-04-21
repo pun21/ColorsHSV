@@ -68,12 +68,6 @@ public class CustomFragment extends ListFragment {
         for (int i = 0; i < hsv.length; i++) {
             hsvList.add(hsv[i]);
         }
-
-        if (mTag == "Fourth") {
-            h = bundle.getFloat("h");
-            s = bundle.getFloat("s");
-            v = bundle.getFloat("v");
-        }
     }
     @Override
     public void onListItemClick(ListView listView, View v, int position, long id) {
@@ -88,12 +82,8 @@ public class CustomFragment extends ListFragment {
         else
             level = 4;
 
-        if (mTag == "Fourth")
-            Toast.makeText(getActivity(), "Go back to select another color.", Toast.LENGTH_SHORT).show();
-        else {
             Toast.makeText(getActivity(), "Item has been clicked, -->Lv."+level, Toast.LENGTH_SHORT).show();
             ((MainActivity)getActivity()).replaceFragment(position);
-        }
     }
 
     public void setTag(int tag) {
@@ -168,17 +158,6 @@ public class CustomFragment extends ListFragment {
                 GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{colorLeft, colorRight});
                 textView.setBackground(drawable);
             }
-            else {
-                //todo try to use the empty in a listview
-                if (position == 0) {
-                    textView.setText("HSV values selected:\n" +
-                                     "Hue Range: " + h + "-" + (h+HUE_RANGE) + "\n" +
-                                     "Saturation: " + s + "\n" +
-                                     "Value: " + v);
-                    textView.setTextSize(18);
-                }
-            }
-
 
             return convertView;
         }

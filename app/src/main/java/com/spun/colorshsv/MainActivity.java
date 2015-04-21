@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private int mFragmentIndex = 0;
     private float h;
     private float s;
+    private float v;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,9 +106,9 @@ public class MainActivity extends Activity {
             if (saturationFragment == null)
                 saturationFragment = new CustomFragment();
 
-            ArrayList<float[]> hsvList = setHSV(position*HUE_RANGE, 0, 0);
+            h = position*HUE_RANGE;
+            ArrayList<float[]> hsvList = setHSV(h, 0, 0);
 
-            h = position;
             for (int i = 0; i < hsvList.size(); i++) {
                 bundle.putFloatArray("color "+i, hsvList.get(i));
             }
@@ -122,9 +123,9 @@ public class MainActivity extends Activity {
             if (valuesFragment == null)
                 valuesFragment = new CustomFragment();
 
-            ArrayList<float[]> hsvList = setHSV(h*HUE_RANGE, MAX_SATURATION-position*SATURATION_DIFF, 0);
+            s = MAX_SATURATION-position*SATURATION_DIFF;
+            ArrayList<float[]> hsvList = setHSV(h*HUE_RANGE, s, 0);
 
-            s = position;
             for (int i = 0; i < hsvList.size(); i++) {
                 bundle.putFloatArray("color "+i, hsvList.get(i));
             }
@@ -138,18 +139,13 @@ public class MainActivity extends Activity {
         else {
             if (summaryFragment == null)
                 summaryFragment = new SummaryFragment();
-//            for (int i = 0; i < hsv.length; i++) {
-//                float[] temp = new float[]{0, MAX_SATURATION, MAX_VALUE};
-//                hsv[i] = temp;
-//            }
-//            bundle.putFloat("h", 0 + (h * HUE_RANGE));
-//            bundle.putFloat("s", MAX_SATURATION - s*(MAX_SATURATION/hsv.length));
-//            bundle.putFloat("v", MAX_VALUE-position*(MAX_VALUE
-//                    /hsv.length));
-//            for (int i = 0; i < hsv.length; i++) {
-//                bundle.putFloatArray("color "+i, hsv[i]);
-//            }
-            bundle.putString("summary", "woohoo! summary");
+
+            v = MAX_VALUE-position*VALUE_DIFF;
+
+            String summaryText = "Hues: " + (int)h + "-" + (int)(h+30) + "\n" +
+                                 "Saturation: " + (int)(s*100) + "%" + "\n" +
+                                 "Value: " + (int)(v*100) + "%" + "\n";
+            bundle.putString("summary", summaryText);
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
             if (summaryFragment.getArguments() != null)
                 summaryFragment.getArguments().putBundle("bundle", bundle);
