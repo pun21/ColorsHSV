@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
     private static int NUM_VALUE_ROWS = (int)(MAX_VALUE/VALUE_DIFF);
 
 
+    private Bundle savedBundle;
     private ArrayList<float[]> hsvList;
     private CustomFragment huesFragment, saturationFragment, valuesFragment;
     private SummaryFragment summaryFragment;
@@ -58,19 +59,26 @@ public class MainActivity extends Activity {
             ft.commit();
             mFragmentIndex++;
         }
-        else if (savedInstanceState != null) {
-            int count = getFragmentManager().getBackStackEntryCount();
-            mFragmentIndex = savedInstanceState.getInt("fragment_index");
+        savedBundle = savedInstanceState;
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (savedBundle != null) {
+            mFragmentIndex = savedBundle.getInt("fragment_index");
             mFragmentIndex++;
             restoreFragments();
-            //restoreViewState();
         }
     }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("fragment_index",--mFragmentIndex);
+        savedBundle = outState;
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
     private void restoreFragments() {
         huesFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[0]);
@@ -78,7 +86,7 @@ public class MainActivity extends Activity {
         valuesFragment = (CustomFragment) getFragmentManager().findFragmentByTag(mFragmentTag[2]);
         summaryFragment = (SummaryFragment) getFragmentManager().findFragmentByTag(mFragmentTag[3]);
     }
-   
+
     private ArrayList<float[]> setHSV(float selectedHue, float selectedSaturation, float selectedValue) {
         int i;
         float hue = 0;
