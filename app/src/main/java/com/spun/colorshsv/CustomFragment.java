@@ -16,18 +16,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class CustomFragment extends ListFragment {
-    private static int MAX_HUE = 360;
-    private static int MIN_HUE = 0;
+
     private static int MAX_SATURATION = 1;
-    private static int MIN_SATURATION = 0;
     private static int MAX_VALUE = 1;
-    private static int MIN_VALUE = 0;
     private static int HUE_RANGE;
+    private static int NUM_ROWS;
 
     private ArrayList<float[]> hsvList;
     private boolean first_created = false;
     private String mTag;
-    private float h, s, v;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,22 +51,7 @@ public class CustomFragment extends ListFragment {
         // remove the dividers from the ListView of the ListFragment
         getListView().setDivider(null);
     }
-    private void setVariables(Bundle bundle) {
-        float hsv[][] = new float[10][];
-        for (int i = 0; i < hsv.length; i++) {
-            hsv[i] = bundle.getFloatArray("color "+i);
-        }
 
-        mTag = bundle.getString("tag");
-        HUE_RANGE = bundle.getInt("hRange");
-
-        if (!hsvList.isEmpty())
-            hsvList.clear();
-
-        for (int i = 0; i < hsv.length; i++) {
-            hsvList.add(hsv[i]);
-        }
-    }
     @Override
     public void onListItemClick(ListView listView, View v, int position, long id) {
         super.onListItemClick(listView, v, position, id);
@@ -84,6 +67,24 @@ public class CustomFragment extends ListFragment {
 
             Toast.makeText(getActivity(), "Item has been clicked, -->Lv."+level, Toast.LENGTH_SHORT).show();
             ((MainActivity)getActivity()).replaceFragment(position);
+    }
+
+    private void setVariables(Bundle bundle) {
+        NUM_ROWS = bundle.getInt("num_rows");
+        float hsv[][] = new float[NUM_ROWS][];
+        for (int i = 0; i < hsv.length; i++) {
+            hsv[i] = bundle.getFloatArray("color "+i);
+        }
+
+        mTag = bundle.getString("tag");
+        HUE_RANGE = bundle.getInt("hRange");
+
+        if (!hsvList.isEmpty())
+            hsvList.clear();
+
+        for (int i = 0; i < hsv.length; i++) {
+            hsvList.add(hsv[i]);
+        }
     }
 
     public void setTag(int tag) {

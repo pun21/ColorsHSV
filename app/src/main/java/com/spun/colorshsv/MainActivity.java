@@ -37,11 +37,12 @@ public class MainActivity extends Activity {
 
         huesFragment = new CustomFragment();
         Bundle bundle = new Bundle();
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < NUM_HUE_ROWS; i++) {
             bundle.putFloatArray("color "+i, hsvList.get(i));
         }
         bundle.putString("tag", mFragmentTag[0]);
         bundle.putFloat("hRange", HUE_RANGE);
+        bundle.putInt("num_rows", NUM_HUE_ROWS);
         huesFragment.setArguments(bundle);
 
          /*The first fragment contains gradients of pure spectral hues with 100% saturation
@@ -102,6 +103,7 @@ public class MainActivity extends Activity {
         Bundle bundle = new Bundle();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+
         if (mFragmentTag[mFragmentIndex] == "Second") {
             if (saturationFragment == null)
                 saturationFragment = new CustomFragment();
@@ -113,6 +115,7 @@ public class MainActivity extends Activity {
                 bundle.putFloatArray("color "+i, hsvList.get(i));
             }
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
+            bundle.putInt("num_rows", NUM_SATURATION_ROWS);
             if (saturationFragment.getArguments() != null)
                 saturationFragment.getArguments().putBundle("bundle", bundle);
             else
@@ -124,12 +127,13 @@ public class MainActivity extends Activity {
                 valuesFragment = new CustomFragment();
 
             s = MAX_SATURATION-position*SATURATION_DIFF;
-            ArrayList<float[]> hsvList = setHSV(h*HUE_RANGE, s, 0);
+            ArrayList<float[]> hsvList = setHSV(h, s, 0);
 
             for (int i = 0; i < hsvList.size(); i++) {
                 bundle.putFloatArray("color "+i, hsvList.get(i));
             }
             bundle.putString("tag", mFragmentTag[mFragmentIndex]);
+            bundle.putInt("num_rows", NUM_VALUE_ROWS);
             if (valuesFragment.getArguments() != null)
                 valuesFragment.getArguments().putBundle("bundle", bundle);
             else
@@ -142,7 +146,7 @@ public class MainActivity extends Activity {
 
             v = MAX_VALUE-position*VALUE_DIFF;
 
-            String summaryText = "Hues: " + (int)h + "-" + (int)(h+30) + "\n" +
+            String summaryText = "Hues: " + (int)h + "-" + (int)(h+30) + " degrees" + "\n" +
                                  "Saturation: " + (int)(s*100) + "%" + "\n" +
                                  "Value: " + (int)(v*100) + "%" + "\n";
             bundle.putString("summary", summaryText);

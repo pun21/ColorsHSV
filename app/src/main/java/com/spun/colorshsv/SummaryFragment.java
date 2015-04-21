@@ -18,9 +18,6 @@ public class SummaryFragment extends Fragment{
         setText(bundle);
 
     }
-    public void setText(Bundle bundle) {
-        mText = bundle.getString("summary");
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -31,5 +28,9 @@ public class SummaryFragment extends Fragment{
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void setText(Bundle bundle) {
+        mText = bundle.getString("summary");
     }
 }
