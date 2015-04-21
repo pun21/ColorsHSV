@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -57,15 +56,7 @@ public class CustomFragment extends ListFragment {
         super.onListItemClick(listView, v, position, id);
 
         first_created = false;
-        int level = 0;
-        if (mTag == "First")
-            level = 2;
-        else if (mTag == "Second")
-            level = 3;
-        else
-            level = 4;
 
-            Toast.makeText(getActivity(), "Item has been clicked, -->Lv."+level, Toast.LENGTH_SHORT).show();
             ((MainActivity)getActivity()).replaceFragment(position);
     }
 
